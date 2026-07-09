@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Calling Agent - Advanced Workspace</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #080a10;
+            --panel-bg: rgba(13, 17, 28, 0.7);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --primary-glow: #6366f1; /* Indigo */
+            --accent-glow: #06b6d4;  /* Cyan */
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #6b7280;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1300px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Top Nav & Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 30%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .server-status {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.05);
+        }
+
+        .server-status i {
+            font-size: 0.6rem;
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); opacity: 0.4; }
+            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px var(--success-color); }
+            100% { transform: scale(0.95); opacity: 0.4; }
+        }
+
+        /* Statistical Grid Block */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: rgba(17, 24, 39, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--card-color, var(--primary-glow));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-info h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-info .num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            color: var(--card-color, var(--primary-glow));
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.02);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Core Workspace Layout Grid */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Glassmorphic card styling */
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.2rem;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+            position: relative;
+        }
+
+        .glass-panel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .panel-title {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.2rem;
+        }
+
+        .panel-title h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .panel-title h2 i {
+            color: var(--primary-glow);
+        }
+
+        /* Interactive Admin Input Form */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.25px;
+        }
+
+        .input-control {
+            background: rgba(6, 9, 17, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .input-control:focus {
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
+            background: rgba(6, 9, 17, 0.95);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-glow) 0%, var(--accent-glow) 100%);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.9rem 1.8rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Lead table and controls */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            padding: 1.2rem 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 1.3rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            vertical-align: middle;
+            transition: var(--transition);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        /* Status Badge CSS */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.85rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--warning-color);
+        }
+
+        .badge-calling {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .badge-failed {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* Action Buttons Grid */
+        .actions-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        /* Call button (indigo glow) */
+        .btn-call {
+            color: #818cf8;
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-call:hover {
+            background: var(--primary-glow);
+            color: #fff;
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Delete button (red warning glow) */
+        .btn-delete {
+            color: var(--danger-color);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-delete:hover {
+            background: var(--danger-color);
+            color: #fff;
+            border-color: var(--danger-color);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+
+        .action-icon-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Interactive Notification Log Console */
+        .console-panel {
+            background: #05070c;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #38bdf8; /* light blue */
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .console-line {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .console-time {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* Notification Alert Toast */
+        .toast-alert {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-glow);
+            border-radius: 12px;
+            padding: 1.2rem 1.8rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            transform: translateY(200%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-alert.show {
+            transform: translateY(0);
+        }
+
+        .toast-alert.error {
+            border-left-color: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Navigation -->
+        <header>
+            <div class="header-title">
+                <h1>Admissions CRM Workspace</h1>
+                <p>Real-time caller workspace integrated with local Chroma DB & Google Gemini API</p>
+            </div>
+            <div class="server-status">
+                <i class="fa-solid fa-circle"></i> Service Connected
+            </div>
+        </header>
+
+        <!-- Stats Bar at Top -->
+        <section class="stats-grid">
+            <!-- Card 1 -->
+            <div class="stat-card" style="--card-color: #6366f1;">
+                <div class="stat-info">
+                    <h3>Total Leads</h3>
+                    <div class="num" id="statTotal">0</div>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <!-- Card 2 -->
+            <div class="stat-card" style="--card-color: #f59e0b;">
+                <div class="stat-info">
+                    <h3>Pending Calls</h3>
+                    <div class="num" id="statPending">0</div>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+            </div>
+            <!-- Card 3 -->
+            <div class="stat-card" style="--card-color: #06b6d4;">
+                <div class="stat-info">
+                    <h3>Active Calls</h3>
+                    <div class="num" id="statCalling">0</div>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-phone-volume"></i></div>
+            </div>
+            <!-- Card 4 -->
+            <div class="stat-card" style="--card-color: #ef4444;">
+                <div class="stat-info">
+                    <h3>Failed Calls</h3>
+                    <div class="num" id="statFailed">0</div>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-phone-slash"></i></div>
+            </div>
+        </section>
+
+        <!-- Workspace main Grid -->
+        <div class="workspace-grid">
+            <!-- Left Side Panel: Admin Registration Form -->
+            <aside class="glass-panel">
+                <div class="panel-title">
+                    <h2><i class="fa-solid fa-sliders"></i> Admin Control Panel</h2>
+                </div>
+                <form id="addStudentForm" style="display: flex; flex-direction: column; gap: 1.4rem;">
+                    <div class="form-group">
+                        <label for="studentName">Student Full Name</label>
+                        <input type="text" id="studentName" class="input-control" placeholder="Rahul Verma" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentPhone">Mobile Number (with country code)</label>
+                        <input type="text" id="studentPhone" class="input-control" placeholder="+919876543210" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentUniversity">Target/Preferred University</label>
+                        <input type="text" id="studentUniversity" class="input-control" placeholder="Apex University" required>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fa-solid fa-database"></i> Insert Lead Record
+                    </button>
+                </form>
+            </aside>
+
+            <!-- Right Side Panel: Records & Activity Logging -->
+            <main class="glass-panel" style="gap: 1.5rem;">
+                <div class="panel-title">
+                    <h2><i class="fa-solid fa-table-list"></i> Lead Routing Records</h2>
+                </div>
+
+                <!-- Table -->
+                <div class="table-wrapper">
+                    <table id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>Student details</th>
+                                <th>Mobile Number</th>
+                                <th>Target University</th>
+                                <th>Routing Status</th>
+                                <th>Action Panel</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loaded Dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Logger Console at Bottom -->
+                <div class="panel-title" style="border-bottom: none; padding-top: 1rem; border-top: 1px solid var(--border-color); padding-bottom: 0;">
+                    <h2 style="font-size: 1.1rem; color: var(--text-muted);"><i class="fa-solid fa-terminal"></i> Activity Log Output</h2>
+                </div>
+                <div class="console-panel" id="consoleLogs">
+                    <div class="console-line">
+                        <span class="console-time">[System Init]</span>
+                        <span>Workspace loaded. Ready for leads routing.</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Alert Toast -->
+    <div id="toastAlert" class="toast-alert">
+        <i class="fa-solid fa-circle-check" id="toastIcon" style="color: var(--success-color); font-size: 1.3rem;"></i>
+        <span id="toastMessage" style="font-weight: 500;">Action triggered successfully</span>
+    </div>
+
+    <script>
+        const addStudentForm = document.getElementById('addStudentForm');
+        const studentsTableBody = document.querySelector('#studentsTable tbody');
+        const consoleLogs = document.getElementById('consoleLogs');
+        const toastAlert = document.getElementById('toastAlert');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+
+        // Stats elements
+        const statTotal = document.getElementById('statTotal');
+        const statPending = document.getElementById('statPending');
+        const statCalling = document.getElementById('statCalling');
+        const statFailed = document.getElementById('statFailed');
+
+        // Print to log console
+        function writeLog(message) {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.innerHTML = `
+                <span class="console-time">[${timeString}]</span>
+                <span>${escapeHtml(message)}</span>
+            `;
+            consoleLogs.appendChild(line);
+            consoleLogs.scrollTop = consoleLogs.scrollHeight;
+        }
+
+        // Show Toast Notifications
+        function alertUser(message, isError = false) {
+            toastMessage.textContent = message;
+            if (isError) {
+                toastAlert.classList.add('error');
+                toastIcon.className = "fa-solid fa-circle-exclamation";
+                toastIcon.style.color = "var(--danger-color)";
+            } else {
+                toastAlert.classList.remove('error');
+                toastIcon.className = "fa-solid fa-circle-check";
+                toastIcon.style.color = "var(--success-color)";
+            }
+            toastAlert.classList.add('show');
+            setTimeout(() => {
+                toastAlert.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fetch Lead statistics counters
+        async function fetchStats() {
+            try {
+                const response = await fetch('/api/stats');
+                if (response.ok) {
+                    const stats = await response.json();
+                    
+                    // Simple text update
+                    statTotal.textContent = stats.total;
+                    statPending.textContent = stats.pending;
+                    statCalling.textContent = stats.calling;
+                    statFailed.textContent = stats.failed;
+                }
+            } catch (err) {
+                console.error("Stats fetch failed", err);
+            }
+        }
+
+        // Fetch students list and render table
+        async function loadLeads() {
+            try {
+                const response = await fetch('/api/students');
+                if (!response.ok) throw new Error("Database read error");
+                const students = await response.json();
+                
+                studentsTableBody.innerHTML = '';
+                
+                if (students.length === 0) {
+                    studentsTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                                No student records found. Add student leads in the control panel.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                students.forEach(student => {
+                    const tr = document.createElement('tr');
+                    
+                    let badgeClass = 'badge-pending';
+                    if (student.call_status.toLowerCase() === 'calling') {
+                        badgeClass = 'badge-calling';
+                    } else if (student.call_status.toLowerCase() === 'failed') {
+                        badgeClass = 'badge-failed';
+                    }
+                    
+                    const isCalling = student.call_status.toLowerCase() === 'calling';
+                    
+                    tr.innerHTML = `
+                        <td><strong>${escapeHtml(student.name)}</strong></td>
+                        <td>${escapeHtml(student.phone)}</td>
+                        <td><span style="color: var(--accent-glow); font-weight: 600;">${escapeHtml(student.preferred_university)}</span></td>
+                        <td><span class="badge ${badgeClass}">${student.call_status}</span></td>
+                        <td>
+                            <div class="actions-group">
+                                <button class="action-icon-btn btn-call" onclick="triggerCall(${student.id}, '${escapeJS(student.name)}')" title="Send Call" ${isCalling ? 'disabled' : ''}>
+                                    ${isCalling ? '<i class="fa-solid fa-spinner fa-spin"></i>' : '<i class="fa-solid fa-phone"></i>'}
+                                </button>
+                                <button class="action-icon-btn btn-delete" onclick="confirmDelete(${student.id}, '${escapeJS(student.name)}')" title="Delete Lead" ${isCalling ? 'disabled' : ''}>
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    studentsTableBody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                alertUser("Failed to sync records from SQLite DB.", true);
+            }
+        }
+
+        // Trigger call logic
+        async function triggerCall(studentId, name) {
+            writeLog(`Triggering MCube outbound call for lead: ${name}`);
+            alertUser(`Initiating connection for ${name}...`);
+            loadLeads();
+            fetchStats();
+
+            try {
+                const response = await fetch(`/api/students/${studentId}/call`, { method: 'POST' });
+                if (response.ok) {
+                    const data = await response.json();
+                    writeLog(`Call successfully generated for ${name}. Call ID: ${data.call_id}`);
+                    alertUser(`Call generated successfully!`);
+                } else {
+                    const errData = await response.json();
+                    throw new Error(errData.detail || "Outbound error");
+                }
+            } catch (err) {
+                writeLog(`Call Failed for ${name}: ${err.message}`);
+                alertUser(err.message, true);
+            } finally {
+                setTimeout(() => {
+                    loadLeads();
+                    fetchStats();
+                }, 2000);
+            }
+        }
+
+        // Prompt confirmation for deletion
+        function confirmDelete(studentId, name) {
+            if (confirm(`Are you sure you want to permanently delete lead: "${name}"?`)) {
+                performDelete(studentId, name);
+            }
+        }
+
+        // Perform DELETE query call
+        async function performDelete(studentId, name) {
+            writeLog(`Deleting record for student: ${name}`);
+            try {
+                const response = await fetch(`/api/students/${studentId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    writeLog(`Record deleted successfully for: ${name}`);
+                    alertUser(`Deleted record: ${name}`);
+                    loadLeads();
+                    fetchStats();
+                } else {
+                    const errData = await response.json();
+                    throw new Error(errData.detail || "Deletion error");
+                }
+            } catch (err) {
+                writeLog(`Failed to delete ${name}: ${err.message}`);
+                alertUser(err.message, true);
+            }
+        }
+
+        // Handle Admin leads registration form submit
+        addStudentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('studentName').value;
+            const phone = document.getElementById('studentPhone').value;
+            const preferred_university = document.getElementById('studentUniversity').value;
+
+            try {
+                const response = await fetch('/api/students', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, preferred_university })
+                });
+
+                if (response.ok) {
+                    writeLog(`Inserted new student lead: ${name} (${preferred_university})`);
+                    alertUser("Lead inserted successfully!");
+                    addStudentForm.reset();
+                    loadLeads();
+                    fetchStats();
+                } else {
+                    const errData = await response.json();
+                    throw new Error(errData.detail || "Lead registration error");
+                }
+            } catch (err) {
+                alertUser(err.message, true);
+            }
+        });
+
+        // String escapers
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function escapeJS(str) {
+            return str
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+        }
+
+        // Initialize Workspace state
+        function initWorkspace() {
+            loadLeads();
+            fetchStats();
+            // Auto refresh state every 5 seconds to sync stats and active call counts
+            setInterval(() => {
+                loadLeads();
+                fetchStats();
+            }, 5000);
+        }
+
+        window.addEventListener('DOMContentLoaded', initWorkspace);
+    </script>
+</body>
+</html>
